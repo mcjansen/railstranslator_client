@@ -2,7 +2,17 @@
 
 module RailstranslatorClient
   class SyncController < ApplicationController
-    before_action :verify_webhook_secret
+    before_action :verify_webhook_secret, only: [:create]
+    skip_before_action :verify_authenticity_token, only: [:create]
+
+    # GET /railstranslator/sync
+    # Shows a page that triggers sync via JavaScript (for browser-based sync)
+    def show
+      @config = RailstranslatorClient.configuration
+      @locale = params[:locale]
+      @auto_sync = params[:auto] == "true"
+      @return_url = params[:return_url]
+    end
 
     # POST /railstranslator/sync
     # Triggered by webhook from RailsTranslator server or manually
@@ -12,23 +22,34 @@ module RailstranslatorClient
       begin
         results = RailstranslatorClient.sync!(locale: locale)
 
-        if results[:errors].any?
-          render json: {
-            success: false,
-            synced: results[:synced],
-            errors: results[:errors]
-          }, status: :unprocessable_entity
-        else
-          render json: {
-            success: true,
-            synced: results[:synced],
-            message: "Translations synced successfully"
-          }
+        respond_to do |format|
+          format.html { redirect_to railstranslator_client.sync_path, notice: "Synced: #{results[:synced].join(', ')}" }
+          format.json do
+            if results[:errors].any?
+              render json: {
+                success: false,
+                synced: results[:synced],
+                errors: results[:errors]
+              }, status: :unprocessable_entity
+            else
+              render json: {
+                success: true,
+                synced: results[:synced],
+                message: "Translations synced successfully"
+              }
+            end
+          end
         end
       rescue RailstranslatorClient::ConfigurationError => e
-        render json: { success: false, error: "Configuration error: #{e.message}" }, status: :unprocessable_entity
+        respond_to do |format|
+          format.html { redirect_to railstranslator_client.sync_path, alert: "Configuration error: #{e.message}" }
+          format.json { render json: { success: false, error: "Configuration error: #{e.message}" }, status: :unprocessable_entity }
+        end
       rescue RailstranslatorClient::SyncError => e
-        render json: { success: false, error: "Sync error: #{e.message}" }, status: :unprocessable_entity
+        respond_to do |format|
+          format.html { redirect_to railstranslator_client.sync_path, alert: "Sync error: #{e.message}" }
+          format.json { render json: { success: false, error: "Sync error: #{e.message}" }, status: :unprocessable_entity }
+        end
       end
     end
 
