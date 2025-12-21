@@ -127,9 +127,15 @@ module RailstranslatorClient
                { locale.to_s => translations }
              end
 
-      File.write(file_path, data.to_yaml)
+      File.write(file_path, deep_sort_hash(data).to_yaml)
 
       Rails.logger.info "[RailstranslatorClient] Wrote translations to #{file_path}"
+    end
+
+    def deep_sort_hash(hash)
+      return hash unless hash.is_a?(Hash)
+
+      hash.sort.to_h.transform_values { |v| deep_sort_hash(v) }
     end
 
     def reload_translations!
