@@ -75,13 +75,39 @@ module RailstranslatorClient
 
       case response
       when Net::HTTPSuccess
-        JSON.parse(response.body)
+        parse_json_response(response, locale)
       when Net::HTTPNotFound
-        Rails.logger.warn "[RailstranslatorClient] Locale #{locale} not found on server"
-        nil
+        raise SyncError, "Application '#{config.app_slug}' or locale '#{locale}' not found on server (404)"
+      when Net::HTTPUnauthorized
+        raise SyncError, "Invalid API key - authentication failed (401)"
+      when Net::HTTPForbidden
+        raise SyncError, "Access denied to application '#{config.app_slug}' (403)"
       else
         raise SyncError, "HTTP #{response.code}: #{response.message}"
       end
+    end
+
+    def parse_json_response(response, locale)
+      content_type = response["Content-Type"].to_s
+
+      unless content_type.include?("application/json")
+        raise SyncError, "Server returned invalid content type '#{content_type}' instead of JSON. " \
+                         "This usually means the application slug '#{config.app_slug}' is incorrect."
+      end
+
+      begin
+        data = JSON.parse(response.body)
+      rescue JSON::ParserError => e
+        raise SyncError, "Failed to parse JSON response: #{e.message}. " \
+                         "Response body starts with: #{response.body[0..100]}..."
+      end
+
+      # Validate that the response contains translation data
+      unless data.is_a?(Hash) && data.keys.any?
+        raise SyncError, "Server returned empty or invalid translation data for locale '#{locale}'"
+      end
+
+      data
     end
 
     def build_uri(locale)
