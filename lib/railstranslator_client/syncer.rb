@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "net/http"
-require "json"
-require "yaml"
 require "fileutils"
 
 module RailstranslatorClient
@@ -67,7 +65,7 @@ module RailstranslatorClient
       uri = build_uri(locale)
       request = Net::HTTP::Get.new(uri)
       request["Authorization"] = "Bearer #{config.api_key}"
-      request["Accept"] = "application/json"
+      request["Accept"] = "text/yaml"
 
       response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
         http.request(request)
@@ -75,7 +73,7 @@ module RailstranslatorClient
 
       case response
       when Net::HTTPSuccess
-        parse_json_response(response, locale)
+        response.body
       when Net::HTTPNotFound
         raise SyncError, "Application '#{config.app_slug}' or locale '#{locale}' not found on server (404)"
       when Net::HTTPUnauthorized
@@ -87,55 +85,18 @@ module RailstranslatorClient
       end
     end
 
-    def parse_json_response(response, locale)
-      content_type = response["Content-Type"].to_s
-
-      unless content_type.include?("application/json")
-        raise SyncError, "Server returned invalid content type '#{content_type}' instead of JSON. " \
-                         "This usually means the application slug '#{config.app_slug}' is incorrect."
-      end
-
-      begin
-        data = JSON.parse(response.body)
-      rescue JSON::ParserError => e
-        raise SyncError, "Failed to parse JSON response: #{e.message}. " \
-                         "Response body starts with: #{response.body[0..100]}..."
-      end
-
-      # Validate that the response contains translation data
-      unless data.is_a?(Hash) && data.keys.any?
-        raise SyncError, "Server returned empty or invalid translation data for locale '#{locale}'"
-      end
-
-      data
-    end
-
     def build_uri(locale)
       base_url = config.api_url.chomp("/")
       URI.parse("#{base_url}/api/v1/#{config.app_slug}/translations/#{locale}")
     end
 
-    def write_locale_file(locale, translations)
+    def write_locale_file(locale, yaml_content)
       FileUtils.mkdir_p(config.resolved_locales_path)
 
       file_path = File.join(config.resolved_locales_path, "#{locale}.yml")
-
-      # Wrap translations in locale key if not already wrapped
-      data = if translations.keys == [locale.to_s]
-               translations
-             else
-               { locale.to_s => translations }
-             end
-
-      File.write(file_path, deep_sort_hash(data).to_yaml)
+      File.write(file_path, yaml_content)
 
       Rails.logger.info "[RailstranslatorClient] Wrote translations to #{file_path}"
-    end
-
-    def deep_sort_hash(hash)
-      return hash unless hash.is_a?(Hash)
-
-      hash.sort.to_h.transform_values { |v| deep_sort_hash(v) }
     end
 
     def reload_translations!
