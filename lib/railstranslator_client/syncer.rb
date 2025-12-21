@@ -73,7 +73,7 @@ module RailstranslatorClient
 
       case response
       when Net::HTTPSuccess
-        response.body
+        response.body.force_encoding("UTF-8")
       when Net::HTTPNotFound
         raise SyncError, "Application '#{config.app_slug}' or locale '#{locale}' not found on server (404)"
       when Net::HTTPUnauthorized
