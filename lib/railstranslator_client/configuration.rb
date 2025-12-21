@@ -2,10 +2,13 @@
 
 module RailstranslatorClient
   class Configuration
+    # Default server URL for development with Docker
+    DEFAULT_API_URL = "http://172.17.0.1:3001"
+
     attr_accessor :api_url, :api_key, :app_slug, :locales_path, :locales, :webhook_secret
 
     def initialize
-      @api_url = ENV["RAILSTRANSLATOR_URL"]
+      @api_url = ENV["RAILSTRANSLATOR_URL"] || DEFAULT_API_URL
       @api_key = ENV["RAILSTRANSLATOR_API_KEY"]
       @app_slug = ENV["RAILSTRANSLATOR_APP_SLUG"]
       @locales_path = nil # Will default to Rails.root.join("config/locales") in engine
@@ -14,12 +17,11 @@ module RailstranslatorClient
     end
 
     def valid?
-      api_url.present? && api_key.present? && app_slug.present?
+      api_key.present? && app_slug.present?
     end
 
     def validate!
       errors = []
-      errors << "api_url is required" if api_url.blank?
       errors << "api_key is required" if api_key.blank?
       errors << "app_slug is required" if app_slug.blank?
 
@@ -28,6 +30,11 @@ module RailstranslatorClient
 
     def resolved_locales_path
       @locales_path || Rails.root.join("config", "locales")
+    end
+
+    # Build the return URL for redirecting back to RailsTranslator after sync
+    def return_url
+      "#{api_url}/#{app_slug}"
     end
   end
 end

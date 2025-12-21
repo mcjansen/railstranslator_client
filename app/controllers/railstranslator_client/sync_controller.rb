@@ -11,7 +11,7 @@ module RailstranslatorClient
       @config = RailstranslatorClient.configuration
       @locale = params[:locale]
       @auto_sync = params[:auto] == "true"
-      @return_url = params[:return_url]
+      @return_url = @config.return_url
     end
 
     # POST /railstranslator/sync

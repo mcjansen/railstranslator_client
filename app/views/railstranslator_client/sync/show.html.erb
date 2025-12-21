@@ -148,7 +148,7 @@
       <% end %>
     <% else %>
       <div class="status error" style="display: block;">
-        Configuration incomplete. Please set RAILSTRANSLATOR_URL, RAILSTRANSLATOR_API_KEY, and RAILSTRANSLATOR_APP_SLUG.
+        Configuration incomplete. Please set RAILSTRANSLATOR_APP_SLUG and RAILSTRANSLATOR_API_KEY.
       </div>
     <% end %>
 
@@ -210,10 +210,10 @@
       btn.disabled = false;
     }
 
-    // Auto-sync if requested
-    if (autoSync) {
-      startSync();
-    }
+    // Auto-sync disabled for now
+    // if (autoSync) {
+    //   startSync();
+    // }
   </script>
 </body>
 </html>
