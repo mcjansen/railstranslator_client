@@ -7,6 +7,10 @@ module RailstranslatorClient
 
     attr_accessor :api_url, :api_key, :app_slug, :locales_path, :locales, :webhook_secret
 
+    # Backwards compatibility alias for old config files using `application`
+    alias_method :application=, :app_slug=
+    alias_method :application, :app_slug
+
     def initialize
       @api_url = ENV["RAILSTRANSLATOR_URL"] || DEFAULT_API_URL
       @api_key = ENV["RAILSTRANSLATOR_API_KEY"]
