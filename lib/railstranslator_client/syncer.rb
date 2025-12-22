@@ -75,11 +75,11 @@ module RailstranslatorClient
       when Net::HTTPSuccess
         response.body.force_encoding("UTF-8")
       when Net::HTTPNotFound
-        raise SyncError, "Application '#{config.app_slug}' or locale '#{locale}' not found on server (404)"
+        raise SyncError, "Application '#{config.application}' or locale '#{locale}' not found on server (404)"
       when Net::HTTPUnauthorized
         raise SyncError, "Invalid API key - authentication failed (401)"
       when Net::HTTPForbidden
-        raise SyncError, "Access denied to application '#{config.app_slug}' (403)"
+        raise SyncError, "Access denied to application '#{config.application}' (403)"
       else
         raise SyncError, "HTTP #{response.code}: #{response.message}"
       end
@@ -87,7 +87,7 @@ module RailstranslatorClient
 
     def build_uri(locale)
       base_url = config.api_url.chomp("/")
-      URI.parse("#{base_url}/api/v1/#{config.app_slug}/translations/#{locale}")
+      URI.parse("#{base_url}/api/v1/#{config.application}/translations/#{locale}")
     end
 
     def write_locale_file(locale, yaml_content)

@@ -5,29 +5,25 @@ module RailstranslatorClient
     # Default server URL (production)
     DEFAULT_API_URL = "https://www.railstranslator.com"
 
-    attr_accessor :api_url, :api_key, :app_slug, :locales_path, :locales, :webhook_secret
-
-    # Backwards compatibility alias for old config files using `application`
-    alias_method :application=, :app_slug=
-    alias_method :application, :app_slug
+    attr_accessor :api_url, :api_key, :application, :locales_path, :locales, :webhook_secret
 
     def initialize
       @api_url = DEFAULT_API_URL
       @api_key = nil
-      @app_slug = nil
+      @application = nil
       @locales_path = nil # Will default to Rails.root.join("config/locales") in engine
       @locales = nil # nil means all available locales
       @webhook_secret = nil
     end
 
     def valid?
-      api_key.present? && app_slug.present?
+      api_key.present? && application.present?
     end
 
     def validate!
       errors = []
       errors << "api_key is required" if api_key.blank?
-      errors << "app_slug is required" if app_slug.blank?
+      errors << "application is required" if application.blank?
 
       raise ConfigurationError, errors.join(", ") if errors.any?
     end
@@ -38,7 +34,7 @@ module RailstranslatorClient
 
     # Build the return URL for redirecting back to RailsTranslator after sync
     def return_url
-      "#{api_url}/#{app_slug}"
+      "#{api_url}/#{application}"
     end
   end
 end

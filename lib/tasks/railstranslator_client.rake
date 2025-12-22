@@ -7,7 +7,7 @@ namespace :translations do
 
     puts "Syncing translations from RailsTranslator..."
     puts "  API URL: #{RailstranslatorClient.configuration.api_url}"
-    puts "  App: #{RailstranslatorClient.configuration.app_slug}"
+    puts "  Application: #{RailstranslatorClient.configuration.application}"
     puts "  Locale: #{locale || 'all'}"
     puts
 
@@ -33,7 +33,7 @@ namespace :translations do
       puts "  RailstranslatorClient.configure do |config|"
       puts "    config.api_url = 'https://your-translator-server.com'"
       puts "    config.api_key = 'your-api-key'"
-      puts "    config.app_slug = 'your-app-slug'"
+      puts "    config.application = 'your-application'"
       puts "  end"
       exit 1
     rescue RailstranslatorClient::SyncError => e
@@ -49,7 +49,7 @@ namespace :translations do
     puts "RailstranslatorClient Configuration:"
     puts "  Configured: #{config.valid? ? 'Yes' : 'No'}"
     puts "  API URL: #{config.api_url || '(not set)'}"
-    puts "  App Slug: #{config.app_slug || '(not set)'}"
+    puts "  Application: #{config.application || '(not set)'}"
     puts "  API Key: #{config.api_key.present? ? '(set)' : '(not set)'}"
     puts "  Locales Path: #{config.resolved_locales_path}"
     puts "  Locales: #{config.locales&.join(', ') || '(all)'}"

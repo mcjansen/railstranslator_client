@@ -62,7 +62,7 @@ module RailstranslatorClient
       render json: {
         configured: config.valid?,
         api_url: config.api_url.present? ? config.api_url.gsub(/\/\/.*@/, "//***@") : nil,
-        app_slug: config.app_slug,
+        application: config.application,
         locales_path: config.resolved_locales_path.to_s,
         webhook_protected: config.webhook_secret.present?
       }

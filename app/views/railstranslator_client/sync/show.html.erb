@@ -134,7 +134,7 @@
       <dt>Server</dt>
       <dd><%= @config.api_url || "(not configured)" %></dd>
       <dt>Application</dt>
-      <dd><%= @config.app_slug || "(not configured)" %></dd>
+      <dd><%= @config.application || "(not configured)" %></dd>
       <dt>Locales</dt>
       <dd><%= @locale || @config.locales&.join(", ") || "all" %></dd>
     </dl>
