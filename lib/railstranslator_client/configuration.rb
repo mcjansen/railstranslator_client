@@ -12,12 +12,12 @@ module RailstranslatorClient
     alias_method :application, :app_slug
 
     def initialize
-      @api_url = ENV["RAILSTRANSLATOR_URL"] || DEFAULT_API_URL
-      @api_key = ENV["RAILSTRANSLATOR_API_KEY"]
-      @app_slug = ENV["RAILSTRANSLATOR_APP_SLUG"]
+      @api_url = DEFAULT_API_URL
+      @api_key = nil
+      @app_slug = nil
       @locales_path = nil # Will default to Rails.root.join("config/locales") in engine
       @locales = nil # nil means all available locales
-      @webhook_secret = ENV["RAILSTRANSLATOR_WEBHOOK_SECRET"]
+      @webhook_secret = nil
     end
 
     def valid?
