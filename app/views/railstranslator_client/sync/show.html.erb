@@ -198,16 +198,17 @@
             html += '</ul>';
           }
           status.innerHTML = html;
+          btn.style.display = 'none';
         } else {
           status.className = 'status error';
           status.innerHTML = '<strong>Sync failed:</strong> ' + (data.error || data.errors?.join(', ') || 'Unknown error');
+          btn.disabled = false;
         }
       } catch (err) {
         status.className = 'status error';
         status.innerHTML = '<strong>Error:</strong> ' + err.message;
+        btn.disabled = false;
       }
-
-      btn.disabled = false;
     }
 
     // Auto-sync disabled for now
