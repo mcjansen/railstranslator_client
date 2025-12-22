@@ -20,32 +20,25 @@ bundle install
 
 ## Configuration
 
-### Environment Variables (Required)
-
-Set these environment variables in your application:
-
-```bash
-RAILSTRANSLATOR_APP_SLUG=your-app-slug    # Your application's slug in RailsTranslator
-RAILSTRANSLATOR_API_KEY=your-api-key      # Export API key from RailsTranslator settings
-```
-
-### Optional Configuration
-
-Create an initializer `config/initializers/railstranslator.rb` for optional settings:
+Create an initializer `config/initializers/railstranslator.rb`:
 
 ```ruby
 RailstranslatorClient.configure do |config|
-  # Override the RailsTranslator server URL (default: https://www.railstranslator.com)
+  # Required: Your application's slug in RailsTranslator
+  config.app_slug = "your-app-slug"
+
+  # Required: Export API key from your RailsTranslator application settings
+  config.api_key = "your-api-key"
+
+  # Optional: Override the RailsTranslator server URL (default: https://www.railstranslator.com)
+  # Useful for local development/testing
   # config.api_url = "http://localhost:3001"
 
-  # Custom locales path (default: config/locales)
+  # Optional: Custom locales path (default: config/locales)
   # config.locales_path = Rails.root.join("config/locales/synced")
 
-  # Limit which locales to sync (default: all available)
+  # Optional: Limit which locales to sync (default: all available)
   # config.locales = [:nl, :en, :fr, :de]
-
-  # Webhook secret for authenticating sync requests
-  # config.webhook_secret = ENV["RAILSTRANSLATOR_WEBHOOK_SECRET"]
 end
 ```
 
@@ -114,14 +107,18 @@ config/locales/
 └── defaults.yml # Your existing local translations
 ```
 
-## Environment Variables
+## Environment Variables (Alternative)
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `RAILSTRANSLATOR_APP_SLUG` | Yes | Your application's slug in RailsTranslator |
-| `RAILSTRANSLATOR_API_KEY` | Yes | Export API key from RailsTranslator settings |
-| `RAILSTRANSLATOR_URL` | No | Override server URL (default: https://www.railstranslator.com) |
-| `RAILSTRANSLATOR_WEBHOOK_SECRET` | No | Secret for webhook authentication |
+You can also configure via environment variables instead of the initializer:
+
+| Variable | Description |
+|----------|-------------|
+| `RAILSTRANSLATOR_APP_SLUG` | Your application's slug in RailsTranslator |
+| `RAILSTRANSLATOR_API_KEY` | Export API key from RailsTranslator settings |
+| `RAILSTRANSLATOR_URL` | Override server URL (default: https://www.railstranslator.com) |
+| `RAILSTRANSLATOR_WEBHOOK_SECRET` | Secret for webhook authentication |
+
+Note: Initializer settings take precedence over environment variables.
 
 ## License
 
