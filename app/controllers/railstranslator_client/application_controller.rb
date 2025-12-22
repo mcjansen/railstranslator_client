@@ -6,6 +6,12 @@ module RailstranslatorClient
 
     private
 
+    def check_development_only
+      unless Rails.env.development?
+        render plain: "RailsTranslator sync routes are only available in development", status: :not_found
+      end
+    end
+
     def verify_webhook_secret
       return true if RailstranslatorClient.configuration.webhook_secret.blank?
 

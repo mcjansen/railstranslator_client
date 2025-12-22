@@ -2,6 +2,7 @@
 
 module RailstranslatorClient
   class SyncController < ApplicationController
+    before_action :check_development_only
     before_action :verify_webhook_secret, only: [:create]
     skip_before_action :verify_authenticity_token, only: [:create]
 

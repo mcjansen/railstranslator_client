@@ -2,8 +2,8 @@
 
 module RailstranslatorClient
   class Configuration
-    # Default server URL for development with Docker
-    DEFAULT_API_URL = "http://172.17.0.1:3001"
+    # Default server URL (production)
+    DEFAULT_API_URL = "https://www.railstranslator.com"
 
     attr_accessor :api_url, :api_key, :app_slug, :locales_path, :locales, :webhook_secret
 
