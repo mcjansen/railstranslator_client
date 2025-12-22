@@ -24,8 +24,8 @@ Create an initializer `config/initializers/railstranslator.rb`:
 
 ```ruby
 RailstranslatorClient.configure do |config|
-  # Required: Your application's slug in RailsTranslator
-  config.app_slug = "your-app-slug"
+  # Required: Your application name in RailsTranslator
+  config.application = "your-application"
 
   # Required: Export API key from your RailsTranslator application settings
   config.api_key = "your-api-key"
