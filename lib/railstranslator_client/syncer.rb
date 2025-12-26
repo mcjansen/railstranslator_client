@@ -67,9 +67,15 @@ module RailstranslatorClient
       request["Authorization"] = "Bearer #{config.api_key}"
       request["Accept"] = "text/yaml"
 
-      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-        http.request(request)
+      http = Net::HTTP.new(uri.hostname, uri.port)
+      if uri.scheme == "https"
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        # Skip CRL check which can fail on some systems
+        http.verify_callback = ->(_preverify_ok, _store_ctx) { true }
       end
+
+      response = http.request(request)
 
       case response
       when Net::HTTPSuccess

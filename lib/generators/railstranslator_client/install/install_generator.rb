@@ -21,11 +21,7 @@ module RailstranslatorClient
         say ""
         say "Next steps:"
         say "  1. Configure your settings in config/initializers/railstranslator.rb"
-        say "  2. Set the required environment variables:"
-        say "     - RAILSTRANSLATOR_URL"
-        say "     - RAILSTRANSLATOR_API_KEY"
-        say "     - RAILSTRANSLATOR_APP_SLUG"
-        say "  3. Run 'rake translations:sync' to sync translations"
+        say "  2. Run 'rake translations:sync' to sync translations"
         say ""
       end
     end
